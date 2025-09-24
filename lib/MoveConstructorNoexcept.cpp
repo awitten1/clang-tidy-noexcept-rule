@@ -6,59 +6,51 @@ using namespace clang;
 
 class WARVisitor : public RecursiveASTVisitor<WARVisitor> {
 public:
-  explicit WARVisitor(WARFinder *Check) : Check(Check) {}
+  explicit WARVisitor(WARFinder *check) : check_(check) {}
 
-  // This function is called for every binary operator, including '='
+  class ReadVarVisitor : public RecursiveASTVisitor<ReadVarVisitor> {
+  public:
+    llvm::DenseSet<const VarDecl *> &ReadVars;
+    ReadVarVisitor(llvm::DenseSet<const VarDecl *> &Vars) : ReadVars(Vars) {}
+    bool VisitDeclRefExpr(DeclRefExpr *DRE) {
+      if (const auto *VD = dyn_cast<VarDecl>(DRE->getDecl())) {
+        ReadVars.insert(VD);
+      }
+      return true;
+    }
+  };
+
   bool VisitBinaryOperator(BinaryOperator *BO) {
-    // We only care about simple assignment expressions for this example
     if (BO->getOpcode() != BO_Assign)
       return true;
 
-    Expr *LHS = BO->getLHS()->IgnoreParenImpCasts(); // The variable being written to
-    Expr *RHS = BO->getRHS(); // The expression being read from
+    Expr *LHS = BO->getLHS()->IgnoreParenImpCasts();
+    Expr *RHS = BO->getRHS();
 
-    // --- Step 1: Traverse the RHS to find all variables being read ---
-    // A small, inner visitor to find all DeclRefExprs (variable references)
-    class ReadVarVisitor : public RecursiveASTVisitor<ReadVarVisitor> {
-    public:
-      llvm::DenseSet<const VarDecl *> &ReadVars;
-      ReadVarVisitor(llvm::DenseSet<const VarDecl *> &Vars) : ReadVars(Vars) {}
-      bool VisitDeclRefExpr(DeclRefExpr *DRE) {
-        if (const auto *VD = dyn_cast<VarDecl>(DRE->getDecl())) {
-          ReadVars.insert(VD);
-        }
-        return true;
-      }
-    };
-
-    ReadVarVisitor RHSVisitor(ReadVars);
+    ReadVarVisitor RHSVisitor(read_vars_);
     RHSVisitor.TraverseStmt(RHS);
 
-    // --- Step 2: Analyze the LHS to find the variable being written to ---
     if (const auto *DRE = dyn_cast<DeclRefExpr>(LHS)) {
       if (const auto *WrittenVar = dyn_cast<VarDecl>(DRE->getDecl())) {
-        // --- Step 3: Check for WAR dependency ---
-        if (ReadVars.count(WrittenVar)) {
-          Check->diag(BO->getBeginLoc(),
+        if (read_vars_.count(WrittenVar)) {
+          check_->diag(BO->getBeginLoc(),
                       "Write-After-Read (WAR) dependency detected on variable '%0'")
               << WrittenVar->getName();
         }
       }
     }
 
-    return true; // Continue traversal
+    return true;
   }
 
 private:
-  WARFinder *Check;
-  llvm::DenseSet<const VarDecl *> ReadVars;
+  WARFinder *check_;
+  llvm::DenseSet<const VarDecl *> read_vars_;
 };
 
 
-// --- Main Check Logic ---
 
 void WARFinder::registerMatchers(MatchFinder *Finder) {
-  // We start by finding every function definition
   Finder->addMatcher(functionDecl(isDefinition()).bind("func"), this);
 }
 
