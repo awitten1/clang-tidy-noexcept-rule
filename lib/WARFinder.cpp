@@ -70,8 +70,12 @@ public:
     return true;
   }
 
-  bool VisitCompoundStmt(CompoundStmt* c) {
+  bool TraverseCompoundStmt(CompoundStmt *S) {
     read_vars_.OpenCompoundStmt();
+    for (Stmt *SubStmt : S->body()) {
+      TraverseStmt(SubStmt);
+    }
+    read_vars_.CloseCompoundStmt();
     return true;
   }
 

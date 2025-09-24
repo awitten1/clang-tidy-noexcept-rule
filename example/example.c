@@ -29,7 +29,7 @@ void WARFromPaper() {
       } else {
         x = 7;
         z = 8;
-        //w = 5;
+        w = 5;
       }
   }
 }
