@@ -43,7 +43,7 @@ public:
   void addCheckFactories(
       clang::tidy::ClangTidyCheckFactories &CheckFactories) override {
     CheckFactories.registerCheck<MoveConstructorNoexcepts>(
-        "move-constructor-noexcept");
+        "move-constructor-noexceptasdf");
   }
 };
 
