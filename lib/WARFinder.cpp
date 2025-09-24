@@ -34,7 +34,7 @@ public:
       if (const auto *WrittenVar = dyn_cast<VarDecl>(DRE->getDecl())) {
         if (read_vars_.count(WrittenVar)) {
           check_->diag(BO->getBeginLoc(),
-                      "Write-After-Read (WAR) dependency detected on variable '%0'")
+                      "WAR dependency detected on variable '%0'")
               << WrittenVar->getName();
         }
       }

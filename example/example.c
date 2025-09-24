@@ -13,7 +13,7 @@ void NoWAR(int param) {
 
 int a, x, w, b, z;
 
-int IN();
+int RIO();
 
 void WARFromPaper() {
    if (a > 0) {
@@ -21,7 +21,7 @@ void WARFromPaper() {
       w = 5;
       b = 2;
    } else {
-      int i = IN();
+      int i = RIO();
       if (i>1) {
         x = 6;
         y = 7;

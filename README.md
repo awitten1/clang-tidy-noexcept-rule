@@ -2,7 +2,7 @@
 
 ## Viewing Clang AST
 
-`clang-check --ast-dump --ast-dump-filter="WAR" example/example.cpp`
+`clang-check --ast-dump --ast-dump-filter="WAR" example/example.c`
 
 
 ## Compiling
@@ -20,12 +20,12 @@ For example:
 ## Random
 
 ```
-clang-tidy -checks='-*,*asdf' --list-checks --load=./build/lib/libWARFinder.dylib ./example/example.cpp
+clang-tidy -checks='-*,*asdf' --list-checks --load=./build/lib/libWARFinder.dylib ./example/example.c
 ```
 
 To run
 ```
-clang-tidy -checks='-*,*asdf' --load=./build/lib/libWARFinder.dylib ./example/example.cpp
+clang-tidy -checks='-*,*asdf' --load=./build/lib/libWARFinder.dylib ./example/example.c
 ```
 
 
