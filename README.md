@@ -15,17 +15,17 @@ To link our shared library with clang-tidy we use the `--load` flag.
 
 For example:
 
-`clang-tidy -checks='*' --list-checks --load=./build/lib/libMoveConstructorNoexcept.dylib | grep -i asdf`
+`clang-tidy -checks='*' --list-checks --load=./build/lib/libWARFinder.dylib | grep -i asdf`
 
 ## Random
 
 ```
-clang-tidy -checks='-*,*asdf' --list-checks --load=./build/lib/libMoveConstructorNoexcept.dylib ./example/example.cpp
+clang-tidy -checks='-*,*asdf' --list-checks --load=./build/lib/libWARFinder.dylib ./example/example.cpp
 ```
 
 To run
 ```
-clang-tidy -checks='-*,*asdf' --load=./build/lib/libMoveConstructorNoexcept.dylib ./example/example.cpp
+clang-tidy -checks='-*,*asdf' --load=./build/lib/libWARFinder.dylib ./example/example.cpp
 ```
 
 

@@ -1,7 +1,7 @@
 
-add_library(MoveConstructorNoexcept SHARED MoveConstructorNoexcept.cpp)
+add_library(WARFinder SHARED WARFinder.cpp)
 
 target_link_libraries(
-    MoveConstructorNoexcept
+    WARFinder
     "$<$<PLATFORM_ID:Darwin>:-undefined dynamic_lookup>"
 )
