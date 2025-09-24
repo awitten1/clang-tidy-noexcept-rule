@@ -1,13 +1,20 @@
 
 int x = 0, y = 1;
 
-void WAR(int param) {
+// This is a problem because this code is non-idempotent.
+// If this code runs twice, we might have an issue.
+//
+// For example if x = 0, y = 1 initially, then after the first execution
+// x = 1, y = 3 then after another execution
+// x = 3, y = 3
+void WAR() {
   x = y;
-  y = param;
+  y = 3;
 }
 
-void NoWAR(int param) {
-  y = param;
+// In this case there's no problem, this code is repeatable.
+void NoWAR() {
+  y = 3;
   x = y;
 }
 
