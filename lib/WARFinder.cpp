@@ -4,17 +4,44 @@
 using namespace clang::ast_matchers;
 using namespace clang;
 
+class ReadVarList {
+public:
+  void Insert(const VarDecl* var) {
+    read_vars_.back().insert(var);
+  }
+
+  bool Find(const VarDecl* var) {
+    for (auto it = read_vars_.rbegin(); it != read_vars_.rend(); ++it) {
+      if (it->find(var) != it->end()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void OpenCompoundStmt() {
+    read_vars_.push_back(llvm::DenseSet<const VarDecl*>{});
+  }
+
+  void CloseCompoundStmt() {
+    read_vars_.pop_back();
+  }
+
+private:
+  std::list<llvm::DenseSet<const VarDecl*>> read_vars_;
+};
+
 class WARVisitor : public RecursiveASTVisitor<WARVisitor> {
 public:
   explicit WARVisitor(WARFinder *check) : check_(check) {}
 
   class ReadVarVisitor : public RecursiveASTVisitor<ReadVarVisitor> {
   public:
-    llvm::DenseSet<const VarDecl *> &ReadVars;
-    ReadVarVisitor(llvm::DenseSet<const VarDecl *> &Vars) : ReadVars(Vars) {}
+    ReadVarList &read_vars_;
+    ReadVarVisitor(ReadVarList &vars) : read_vars_(vars) {}
     bool VisitDeclRefExpr(DeclRefExpr *DRE) {
       if (const auto *VD = dyn_cast<VarDecl>(DRE->getDecl())) {
-        ReadVars.insert(VD);
+        read_vars_.Insert(VD);
       }
       return true;
     }
@@ -32,7 +59,7 @@ public:
 
     if (const auto *DRE = dyn_cast<DeclRefExpr>(LHS)) {
       if (const auto *WrittenVar = dyn_cast<VarDecl>(DRE->getDecl())) {
-        if (read_vars_.count(WrittenVar)) {
+        if (read_vars_.Find(WrittenVar)) {
           check_->diag(BO->getBeginLoc(),
                       "WAR dependency detected on variable '%0'")
               << WrittenVar->getName();
@@ -43,9 +70,14 @@ public:
     return true;
   }
 
+  bool VisitCompoundStmt(CompoundStmt* c) {
+    read_vars_.OpenCompoundStmt();
+    return true;
+  }
+
 private:
   WARFinder *check_;
-  llvm::DenseSet<const VarDecl *> read_vars_;
+  ReadVarList read_vars_;
 };
 
 
