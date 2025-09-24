@@ -12,23 +12,10 @@
 #include <clang/ASTMatchers/ASTMatchers.h>
 #include <clang/ASTMatchers/ASTMatchersInternal.h>
 
-class MatchCallbackImpl
-    : public clang::ast_matchers::MatchFinder::MatchCallback {
-  void
-  run(const clang::ast_matchers::MatchFinder::MatchResult &Result) override {
-    std::cout << "Found a match" << std::endl;
-  }
-};
 
-namespace MyNameSpace {}
-
-template <typename T>
-class Matcher
-    : public clang::ast_matchers::internal::SingleNodeMatcherInterface<T> {};
-
-class MoveConstructorNoexcepts : public clang::tidy::ClangTidyCheck {
+class WARFinder : public clang::tidy::ClangTidyCheck {
 public:
-  MoveConstructorNoexcepts(clang::StringRef Name,
+  WARFinder(clang::StringRef Name,
                            clang::tidy::ClangTidyContext *Context)
       : clang::tidy::ClangTidyCheck(Name, Context) {}
 
@@ -38,14 +25,14 @@ public:
   check(const clang::ast_matchers::MatchFinder::MatchResult &Result) override;
 };
 
-class MoveConstructorNoexceptModule : public clang::tidy::ClangTidyModule {
+class WARFinderModule : public clang::tidy::ClangTidyModule {
 public:
   void addCheckFactories(
       clang::tidy::ClangTidyCheckFactories &CheckFactories) override {
-    CheckFactories.registerCheck<MoveConstructorNoexcepts>(
+    CheckFactories.registerCheck<WARFinder>(
         "move-constructor-noexceptasdf");
   }
 };
 
-static clang::tidy::ClangTidyModuleRegistry::Add<MoveConstructorNoexceptModule>
+static clang::tidy::ClangTidyModuleRegistry::Add<WARFinderModule>
     X("move-constructor-noexcept", "Adds my lint checks.");

@@ -2,9 +2,7 @@
 
 ## Viewing Clang AST
 
-To view the AST for the constructors of the class `ExampleBad` run
-
-`clang-check --ast-dump --ast-dump-filter="ExampleBad::ExampleBad" example/example.cpp`
+`clang-check --ast-dump --ast-dump-filter="WAR" example/example.cpp`
 
 
 ## Compiling
