@@ -7,6 +7,6 @@ void WAR(int param) {
 }
 
 void NoWAR(int param) {
-  x = y;
   y = param;
+  x = y;
 }
