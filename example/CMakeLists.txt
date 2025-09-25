@@ -1,2 +1,2 @@
 
-add_executable(example example.cpp)
+add_library(example example.c)
