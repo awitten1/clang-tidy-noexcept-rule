@@ -1,5 +1,6 @@
 
 int x = 0, y = 1;
+int *p = &x;
 
 // This is a problem because this code is non-idempotent.
 // If this code runs twice, we might have an issue.
@@ -22,7 +23,19 @@ void WAR2() {
   x = x + 1;
 }
 
-int a, x, w, b, z;
+// deeply unsound.
+void WARBroken() {
+  y = x;
+  *p = x;
+}
+
+void false_positive() {
+  x = 10;
+  y = x;
+  x = 20;
+}
+
+int a, w, b, z;
 
 int RIO();
 
