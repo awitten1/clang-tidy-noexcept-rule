@@ -31,9 +31,9 @@ public:
   void addCheckFactories(
       clang::tidy::ClangTidyCheckFactories &CheckFactories) override {
     CheckFactories.registerCheck<WARFinder>(
-        "move-constructor-noexceptasdf");
+        "war-finder-asdf");
   }
 };
 
 static clang::tidy::ClangTidyModuleRegistry::Add<WARFinderModule>
-    X("move-constructor-noexcept", "Adds my lint checks.");
+    X("war-finder", "Adds my lint checks.");

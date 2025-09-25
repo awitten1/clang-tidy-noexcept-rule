@@ -18,6 +18,10 @@ void NoWAR() {
   x = y;
 }
 
+void WAR2() {
+  x = x + 1;
+}
+
 int a, x, w, b, z;
 
 int RIO();
